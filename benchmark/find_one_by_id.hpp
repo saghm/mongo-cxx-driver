@@ -24,10 +24,14 @@
 
 namespace benchmark {
 
-class find_one_by_id : class microbench {
+using bsoncxx::builder::basic::make_document;
+using bsoncxx::builder::basic::kvp;
+using bsoncxx::builder::basic::concatenate;
+
+class find_one_by_id : public microbench {
    public:
     // TODO: need to wait for scoring object to be finished to finish constructor
-    find_one_by_id() : _conn{mongocxx::uri{}}, _score{10000} {}
+    find_one_by_id() : microbench{10000}, _conn{mongocxx::uri{}} {}
 
     void setup(bsoncxx::stdx::string_view);
 
@@ -38,17 +42,17 @@ class find_one_by_id : class microbench {
 
    private:
     mongocxx::client _conn;
-}
+};
 
-void find_one_by_id::setup(bsoncxx::stdx::string_view json_file){
+void find_one_by_id::setup(bsoncxx::stdx::string_view json_file) {
     auto doc = parse_json_file_to_documents(json_file)[0];
     mongocxx::database db = _conn["perftest"];
     db.drop();
     auto coll = db["corpus"];
-    for (std::uint32_t i = 1; i <= 10000; i++) {
-        bsoncxx::document::value insert{doc.view()};
-        insert.append(kvp("_id", i));
-        coll.insert_one(insert);
+    for (std::int32_t i = 1; i <= 10000; i++) {
+        bsoncxx::document::value insert =
+            make_document(kvp("_id", bsoncxx::types::b_int32{i}), concatenate(doc.view()));
+        coll.insert_one(insert.view());
     }
 }
 
@@ -59,12 +63,12 @@ void find_one_by_id::teardown() {
 
 void find_one_by_id::task() {
     auto coll = _conn["perftest"]["corpus"];
-    for (std::uint32_t i = 1; i <= 10000; i++) {
-        auto cursor = coll.find(make_document(kvp("_id", i)));
+    for (std::int32_t i = 1; i <= 10000; i++) {
+        auto cursor = coll.find(make_document(kvp("_id", bsoncxx::types::b_int32{i})));
 
         // Iterate over the cursor.
-        for (auto&& doc : cursor)
-            ;
+        for (auto&& doc : cursor) {
+        }
     }
 }
 }

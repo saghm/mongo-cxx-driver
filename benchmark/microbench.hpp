@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include "score_recorder.hpp"
+
 #include <fstream>
 #include <string>
 #include <vector>
@@ -26,9 +28,11 @@
 namespace benchmark {
 class microbench {
    public:
-    microbench() {}
+    microbench() : _score{0} {}
 
-    virtual void setup(const bsoncxx::stdx::string_view) : _score{0} {}
+    microbench(int a) : _score{a} {}
+
+    virtual void setup(const bsoncxx::stdx::string_view) {}
 
     virtual void before_task() {}
 
@@ -38,33 +42,33 @@ class microbench {
 
     virtual void teardown() {}
 
-    const benchmark_score& get_results() const {
+    const benchmark::score_recorder& get_results() const {
         return _score;
     }
 
-    const std::chrono::duration<int, std::milli>& get_execution_time() const {
+    const std::chrono::milliseconds& get_execution_time() const {
         return _score.get_execution_time();
     }
 
    protected:
     virtual void task() {}
 
-    benchmark_score _score;
-}
+    benchmark::score_recorder _score;
+};
 
 void microbench::do_task() {
-    scores.start_sample();
+    _score.start_sample();
     task();
-    scores.end_sample();
+    _score.end_sample();
 }
 
 std::vector<std::string> parse_json_file_to_strings(bsoncxx::stdx::string_view json_file) {
-    std::vector<std::strings> jsons;
-    std::ifstream stream{json_file};
+    std::vector<std::string> jsons;
+    std::ifstream stream{json_file.to_string()};
     while (!stream.eof()) {
         std::string s;
         std::getline(stream, s);
-        jsons->push_back(s);
+        jsons.push_back(s);
     }
     return jsons;
 }
@@ -72,11 +76,11 @@ std::vector<std::string> parse_json_file_to_strings(bsoncxx::stdx::string_view j
 std::vector<bsoncxx::document::value> parse_json_file_to_documents(
     bsoncxx::stdx::string_view json_file) {
     std::vector<bsoncxx::document::value> docs;
-    std::ifstream stream{json_file};
+    std::ifstream stream{json_file.to_string()};
     while (!stream.eof()) {
         std::string s;
         std::getline(stream, s);
-        docs->push_back(bsoncxx::from_json(bsoncxx::stdx::string_view{s}));
+        docs.push_back(bsoncxx::from_json(bsoncxx::stdx::string_view{s}));
     }
     return docs;
 }
@@ -85,7 +89,7 @@ std::vector<std::string> parse_documents_to_bson(
     const std::vector<bsoncxx::document::value>& docs) {
     std::vector<std::string> bsons;
     for (std::uint32_t i = 0; i < docs.size(); i++) {
-        bsons->push_back(bsoncxx::to_json(docs[i]));
+        bsons.push_back(bsoncxx::to_json(docs[i]));
     }
     return bsons;
 }

@@ -26,4 +26,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Gv")
 endif()
 
-add_library(Benchmark score_recorder.cpp score_recorder.hpp microbench.hpp find_one_by_id.hpp bson_encoding.hpp benchmark_runner.cpp)
+add_custom_target(benchmark DEPENDS run_benchmark)
+
+add_library(run_benchmark benchmark_runner.cpp score_recorder.cpp bson_encoding.hpp)
+
+target_include_directories(run_benchmark PUBLIC "/usr/local/include/mongocxx/v_noabi" "/usr/local/include/bsoncxx/v_noabi")
+target_link_libraries(run_benchmark mongocxx bsoncxx)

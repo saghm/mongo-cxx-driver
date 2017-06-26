@@ -14,14 +14,15 @@
 
 #pragma once
 
+#include <bsoncxx/json.hpp>
 #include "microbench.hpp"
 
 namespace benchmark {
 
-class bson_encoding : class microbench {
+class bson_encoding : public microbench {
    public:
     // TODO: need to wait for scoring object to be finished to implement constructor
-    bson_encoding() : _score{10000} {}
+    bson_encoding() : microbench{10000} {}
 
     void setup(bsoncxx::stdx::string_view);
 
@@ -30,9 +31,9 @@ class bson_encoding : class microbench {
 
    private:
     std::string _json;
-}
+};
 
-void bson_encoding::setup(bsoncxx::stdx::string_view json_file){
+void bson_encoding::setup(bsoncxx::stdx::string_view json_file) {
     _json = parse_json_file_to_strings(json_file)[0];
 }
 
