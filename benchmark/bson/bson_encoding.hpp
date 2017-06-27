@@ -22,9 +22,12 @@ namespace benchmark {
 class bson_encoding : public microbench {
    public:
     // TODO: need to wait for scoring object to be finished to implement constructor
-    bson_encoding() : microbench{10000} {}
+    bson_encoding() = delete;
 
-    void setup(bsoncxx::stdx::string_view);
+    bson_encoding(double task_size, bsoncxx::stdx::string_view json_file) : microbench{task_size} {
+        _tags.insert(benchmark_type::bson_bench);
+        _json = parse_json_file_to_strings(json_file)[0];
+    }
 
    protected:
     void task();
@@ -32,10 +35,6 @@ class bson_encoding : public microbench {
    private:
     std::string _json;
 };
-
-void bson_encoding::setup(bsoncxx::stdx::string_view json_file) {
-    _json = parse_json_file_to_strings(json_file)[0];
-}
 
 void bson_encoding::task() {
     for (std::uint32_t i = 0; i < 10000; i++) {
