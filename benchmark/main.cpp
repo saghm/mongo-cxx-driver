@@ -20,13 +20,15 @@ using namespace benchmark;
 
 int main() {
     benchmark_runner runner;
-    runner.run_microbenches();
+    runner.run_microbenches(benchmark_type::bson_bench);
     std::cout << "BSONBench: " << runner.calculate_bson_bench_score() << " MB/s" << std::endl;
-    std::cout << "SingleBench: " << runner.calculate_single_bench_score() << " MB/s" << std::endl;
-    std::cout << "MultiBench: " << runner.calculate_multi_bench_score() << "MB/s" << std::endl;
-    std::cout << "ParallelBench: " << runner.calculate_parallel_bench_score() << "MB/s"
-              << std::endl;
-    std::cout << "ReadBench: " << runner.calculate_read_bench_score() << "MB/s" << std::endl;
-    std::cout << "WriteBench: " << runner.calculate_write_bench_score() << "MB/s" << std::endl;
-    std::cout << "DriverBench: " << runner.calculate_driver_bench_score() << "MB/s" << std::endl;
+
+    // std::cout << "SingleBench: " << runner.calculate_single_bench_score() << " MB/s" <<
+    // std::endl;
+    // std::cout << "MultiBench: " << runner.calculate_multi_bench_score() << "MB/s" << std::endl;
+    // std::cout << "ParallelBench: " << runner.calculate_parallel_bench_score() << "MB/s"
+    //          << std::endl;
+    // std::cout << "ReadBench: " << runner.calculate_read_bench_score() << "MB/s" << std::endl;
+    // std::cout << "WriteBench: " << runner.calculate_write_bench_score() << "MB/s" << std::endl;
+    // std::cout << "DriverBench: " << runner.calculate_driver_bench_score() << "MB/s" << std::endl;
 }

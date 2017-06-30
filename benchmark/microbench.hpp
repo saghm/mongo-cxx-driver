@@ -32,19 +32,24 @@ enum class benchmark_type {
     parallel_bench,
     read_bench,
     write_bench,
-    driver_bench
+    driver_bench,
+    all_benchmarks
 };
 
-const std::chrono::duration<std::int32_t, std::milli> mintime{60000};
-const std::chrono::duration<std::int32_t, std::milli> maxtime{300000};
+const std::chrono::milliseconds mintime{60000};
+const std::chrono::milliseconds maxtime{300000};
 
 class microbench {
    public:
     microbench() : _score{0} {}
 
-    microbench(double a) : _score{a} {}
+    microbench(double a, std::string name = "un-named") : _score{a}, _name{name} {}
 
     void run();
+
+    std::string get_name() {
+        return _name;
+    }
 
     benchmark::score_recorder& get_results() {
         return _score;
@@ -67,6 +72,7 @@ class microbench {
 
     benchmark::score_recorder _score;
     std::set<benchmark_type> _tags;
+    std::string _name;
 };
 
 std::vector<std::string> parse_json_file_to_strings(bsoncxx::stdx::string_view json_file);

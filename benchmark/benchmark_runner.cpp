@@ -27,43 +27,50 @@ namespace benchmark {
 
 // The task sizes and iteration numbers come from the Driver Perfomance Benchmarking Reference Doc.
 benchmark_runner::benchmark_runner() {
+    using bsoncxx::stdx::make_unique;
+
     // Bson microbenchmarks
-    _microbenches.push_back(bson_encoding{75.31, "FLAT_BSON.json"});
-    _microbenches.push_back(bson_encoding{19.64, "DEEP_BSON.json"});
-    _microbenches.push_back(bson_encoding{57.34, "FULL_BSON.json"});
+    _microbenches.push_back(make_unique<bson_encoding>(75.31, "extended_bson/flat_bson.json"));
+    _microbenches.push_back(make_unique<bson_encoding>(19.64, "extended_bson/deep_bson.json"));
+    _microbenches.push_back(make_unique<bson_encoding>(57.34, "extended_bson/full_bson.json"));
     // TODO CXX-1241: Add bson_decoding equivalents.
 
     // Single doc microbenchmarks
-    _microbenches.push_back(run_command{});
-    _microbenches.push_back(find_one_by_id{"TWEET.json"});
-    _microbenches.push_back(insert_one{2.75, 10000, "SMALL_DOC.json"});
-    _microbenches.push_back(insert_one{27.31, 10, "LARGE_DOC.json"});
+    _microbenches.push_back(make_unique<run_command>());
+    _microbenches.push_back(make_unique<find_one_by_id>("single_and_multi_document/tweet.json"));
+    _microbenches.push_back(
+        make_unique<insert_one>(2.75, 10000, "single_and_multi_document/small_doc.json"));
+    _microbenches.push_back(
+        make_unique<insert_one>(27.31, 10, "single_and_multi_document/large_doc.json"));
 
+    /*
     // Multi doc microbenchmarks
-    _microbenches.push_back(find_many{"TWEET.json"});
-    _microbenches.push_back(bulk_insert{2.75, 10000, "SMALL_DOC.json"});
-    _microbenches.push_back(bulk_insert{27.31, 10, "LARGE_DOC"});
-    _microbenches.push_back(gridfs_upload{"GRIDFS_LARGE.bin"});
-    _microbenches.push_back(gridfs_download{"GRIDFS_LARGE.bin"});
-
+    _microbenches.push_back(find_many{"single_and_multi_document/tweet.json"});
+    _microbenches.push_back(bulk_insert{2.75, 10000, "single_and_multi_document/small_doc.json"});
+    _microbenches.push_back(bulk_insert{27.31, 10, "single_and_multi_document/large_doc.json"});
+    _microbenches.push_back(gridfs_upload{"single_and_multi_document/gridfs_large.bin"});
+    _microbenches.push_back(gridfs_download{"single_and_multi_document/gridfs_large.bin"});
+*/
     // TODO CXX-1378: add parallel microbenchmarks
 }
 
-void benchmark_runner::run_microbenches() {
+void benchmark_runner::run_microbenches(benchmark_type tag) {
     mongocxx::instance instance{};
 
-    for (microbench& bench : _microbenches) {
-        bench.run();
+    for (std::unique_ptr<microbench>& bench : _microbenches) {
+        if (bench->has_tag(tag)) {
+            bench->run();
+        }
     }
 }
 
 double benchmark_runner::calculate_average(benchmark_type tag) {
     std::uint32_t count = 0;
     double total = 0.0;
-    for (microbench& bench : _microbenches) {
-        if (bench.has_tag(tag)) {
+    for (std::unique_ptr<microbench>& bench : _microbenches) {
+        if (bench->has_tag(tag)) {
             count++;
-            total += bench.get_results().get_score();
+            total += bench->get_results().get_score();
         }
     }
     return total / static_cast<double>(count);

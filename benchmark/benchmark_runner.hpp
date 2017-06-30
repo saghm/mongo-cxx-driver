@@ -28,7 +28,7 @@ class benchmark_runner {
     // iterations if multiple microbenchmarks use a subclass.
     benchmark_runner();
 
-    void run_microbenches();
+    void run_microbenches(benchmark_type type = benchmark_type::all_benchmarks);
 
     double calculate_bson_bench_score();
 
@@ -47,6 +47,6 @@ class benchmark_runner {
    private:
     double calculate_average(benchmark_type);
 
-    std::vector<microbench> _microbenches;
+    std::vector<std::unique_ptr<microbench>> _microbenches;
 };
 }

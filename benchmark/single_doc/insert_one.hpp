@@ -33,7 +33,7 @@ class insert_one : public microbench {
     insert_one() = delete;
 
     insert_one(double task_size, std::int32_t iter, bsoncxx::stdx::string_view json_file)
-        : microbench{task_size}, _conn{mongocxx::uri{}}, _iter{iter} {
+        : microbench{task_size, "insert_one"}, _conn{mongocxx::uri{}}, _iter{iter} {
         _tags.insert(benchmark_type::single_bench);
         _tags.insert(benchmark_type::write_bench);
         _doc = parse_json_file_to_documents(json_file)[0];
