@@ -43,14 +43,17 @@ benchmark_runner::benchmark_runner() {
     _microbenches.push_back(
         make_unique<insert_one>(27.31, 10, "single_and_multi_document/large_doc.json"));
 
-    /*
     // Multi doc microbenchmarks
-    _microbenches.push_back(find_many{"single_and_multi_document/tweet.json"});
-    _microbenches.push_back(bulk_insert{2.75, 10000, "single_and_multi_document/small_doc.json"});
-    _microbenches.push_back(bulk_insert{27.31, 10, "single_and_multi_document/large_doc.json"});
-    _microbenches.push_back(gridfs_upload{"single_and_multi_document/gridfs_large.bin"});
-    _microbenches.push_back(gridfs_download{"single_and_multi_document/gridfs_large.bin"});
-*/
+    _microbenches.push_back(make_unique<find_many>("single_and_multi_document/tweet.json"));
+    _microbenches.push_back(
+        make_unique<bulk_insert>(2.75, 10000, "single_and_multi_document/small_doc.json"));
+    _microbenches.push_back(
+        make_unique<bulk_insert>(27.31, 10, "single_and_multi_document/large_doc.json"));
+    _microbenches.push_back(
+        make_unique<gridfs_upload>("single_and_multi_document/gridfs_large.bin"));
+    _microbenches.push_back(
+        make_unique<gridfs_download>("single_and_multi_document/gridfs_large.bin"));
+
     // TODO CXX-1378: add parallel microbenchmarks
 }
 
@@ -58,7 +61,7 @@ void benchmark_runner::run_microbenches(benchmark_type tag) {
     mongocxx::instance instance{};
 
     for (std::unique_ptr<microbench>& bench : _microbenches) {
-        if (bench->has_tag(tag)) {
+        if (tag == benchmark::benchmark_type::all_benchmarks || bench->has_tag(tag)) {
             bench->run();
         }
     }

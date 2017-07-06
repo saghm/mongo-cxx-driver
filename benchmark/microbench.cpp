@@ -10,7 +10,7 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.
+// limitations under the mLicense.
 
 #include "microbench.hpp"
 
@@ -32,24 +32,19 @@ void microbench::run() {
     setup();
 
     double count = 0;
-    for (std::uint32_t iteration = 0; !finished_running(_score.get_execution_time(), iteration);
-         iteration++) {
+    std::uint32_t iteration = 0;
+    for (iteration = 0; !finished_running(_score.get_execution_time(), iteration); iteration++) {
         before_task();
 
         _score.start_sample();
         task();
-        count = _score.get_execution_time().count();
-        std::cout << count << std::endl;
         _score.end_sample();
 
         after_task();
-
-        // if (_score.get_execution_time().count() - count > 100) {
-
-        //}
     }
     teardown();
 
+    std::cout << iteration << " iterations" << std::endl;
     std::cout << _name << ": " << _score.get_score() << "MB/s" << std::endl;
 }
 

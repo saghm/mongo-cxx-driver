@@ -43,7 +43,8 @@ class microbench {
    public:
     microbench() : _score{0} {}
 
-    microbench(double a, std::string name = "un-named") : _score{a}, _name{name} {}
+    microbench(double a, std::string name = "un-named")
+        : _score{a}, _name{name + std::to_string(a)} {}
 
     void run();
 

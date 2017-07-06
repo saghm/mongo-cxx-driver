@@ -32,7 +32,7 @@ class gridfs_upload : public microbench {
    public:
     // The task size comes from the Driver Perfomance Benchmarking Reference Doc.
     gridfs_upload(bsoncxx::stdx::string_view file_name)
-        : microbench{52.43}, _conn{mongocxx::uri{}} {
+        : microbench{52.43, "gridfs_upload"}, _conn{mongocxx::uri{}} {
         _tags.insert(benchmark_type::multi_bench);
         _tags.insert(benchmark_type::write_bench);
         std::ifstream stream{file_name.to_string()};

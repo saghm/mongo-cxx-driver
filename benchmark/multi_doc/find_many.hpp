@@ -32,7 +32,9 @@ class find_many : public microbench {
    public:
     // The task size comes from the Driver Perfomance Benchmarking Reference Doc.
     find_many(bsoncxx::stdx::string_view json_file)
-        : microbench{16.22}, _conn{mongocxx::uri{}}, _json_file{json_file.to_string()} {
+        : microbench{16.22, "find_many"},
+          _conn{mongocxx::uri{}},
+          _json_file{json_file.to_string()} {
         _tags.insert(benchmark_type::multi_bench);
         _tags.insert(benchmark_type::read_bench);
     }

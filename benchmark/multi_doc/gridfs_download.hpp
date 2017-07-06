@@ -36,7 +36,9 @@ class gridfs_download : public microbench {
    public:
     // The task size comes from the Driver Perfomance Benchmarking Reference Doc.
     gridfs_download(bsoncxx::stdx::string_view file_name)
-        : microbench{52.43}, _conn{mongocxx::uri{}}, _file_name{file_name.to_string()} {
+        : microbench{52.43, "gridfs_download"},
+          _conn{mongocxx::uri{}},
+          _file_name{file_name.to_string()} {
         _tags.insert(benchmark_type::multi_bench);
         _tags.insert(benchmark_type::read_bench);
     }
