@@ -30,7 +30,11 @@ using bsoncxx::builder::basic::kvp;
 class run_command : public microbench {
    public:
     // The task size comes from the Driver Perfomance Benchmarking Reference Doc.
-    run_command() : microbench{0.16, "run_command"}, _conn{mongocxx::uri{}} {
+    run_command()
+        : microbench{"TestRunCommand",
+                     0.16,
+                     std::set<benchmark_type>{benchmark_type::run_command_bench}},
+          _conn{mongocxx::uri{}} {
         _db = _conn["perftest"];
     }
 

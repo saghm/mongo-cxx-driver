@@ -36,8 +36,8 @@ class gridfs_download : public microbench {
    public:
     // The task size comes from the Driver Perfomance Benchmarking Reference Doc.
     gridfs_download(bsoncxx::stdx::string_view file_name)
-        : microbench{52.43,
-                     "gridfs_download",
+        : microbench{"TestGridFsDownload",
+                     52.43,
                      std::set<benchmark_type>{benchmark_type::multi_bench,
                                               benchmark_type::read_bench}},
           _conn{mongocxx::uri{}},

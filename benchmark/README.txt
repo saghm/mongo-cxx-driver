@@ -3,8 +3,19 @@ https://github.com/mongodb-labs/driver-performance-test-data
 
 Untar them and place the files in the directory you will be running the microbenchmarks from.
 
-In order to select specific tests, use the flags:
- TODO: add flags
+In order to run specific tests, just specify their names as arguments. If run with no arguments,
+all benchmarks will be run.
+e.g. ./microbenchmarks BSONBench MultiBench
+
+Full list of options:
+BSONBench
+SingleBench
+ParallelBench
+ReadBench
+WriteBench
+RunCommandBench
+
+See the spec for details on these benchmarks.
 
 In case there is trouble running the benchmarks, they were written and will run with: 
  -libbson at commit 1c5b90022bbbdf0fa8095b337a25b218a2651241 

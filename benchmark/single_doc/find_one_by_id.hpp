@@ -32,8 +32,8 @@ class find_one_by_id : public microbench {
    public:
     // The task size comes from the Driver Perfomance Benchmarking Reference Doc.
     find_one_by_id(bsoncxx::stdx::string_view json_file)
-        : microbench{16.22,
-                     "find_one_by_id",
+        : microbench{"TestFindOneById",
+                     16.22,
                      std::set<benchmark_type>{benchmark_type::single_bench,
                                               benchmark_type::read_bench}},
           _conn{mongocxx::uri{}},

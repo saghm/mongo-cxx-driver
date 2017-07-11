@@ -44,8 +44,8 @@ class json_multi_import : public microbench {
     // The task size comes from the Driver Perfomance Benchmarking Reference Doc.
     json_multi_import(bsoncxx::stdx::string_view dir,
                       std::uint32_t thread_num = std::thread::hardware_concurrency() * 2)
-        : microbench{565,
-                     "json_multi_import",
+        : microbench{"TestJsonMultiImport",
+                     565,
                      std::set<benchmark_type>{benchmark_type::parallel_bench,
                                               benchmark_type::write_bench}},
           _directory{dir.to_string()},

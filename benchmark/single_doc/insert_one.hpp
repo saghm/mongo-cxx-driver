@@ -32,9 +32,12 @@ class insert_one : public microbench {
    public:
     insert_one() = delete;
 
-    insert_one(double task_size, std::int32_t iter, bsoncxx::stdx::string_view json_file)
-        : microbench{task_size,
-                     "insert_one",
+    insert_one(std::string name,
+               double task_size,
+               std::int32_t iter,
+               bsoncxx::stdx::string_view json_file)
+        : microbench{name,
+                     task_size,
                      std::set<benchmark_type>{benchmark_type::single_bench,
                                               benchmark_type::write_bench}},
           _conn{mongocxx::uri{}},

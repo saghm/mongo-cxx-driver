@@ -34,9 +34,12 @@ class bulk_insert : public microbench {
    public:
     bulk_insert() = delete;
 
-    bulk_insert(double task_size, std::int32_t doc_num, bsoncxx::stdx::string_view json_file)
-        : microbench{task_size,
-                     "bulk_insert",
+    bulk_insert(std::string name,
+                double task_size,
+                std::int32_t doc_num,
+                bsoncxx::stdx::string_view json_file)
+        : microbench{name,
+                     task_size,
                      std::set<benchmark_type>{benchmark_type::multi_bench,
                                               benchmark_type::write_bench}},
           _conn{mongocxx::uri{}},

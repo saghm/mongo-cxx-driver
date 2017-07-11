@@ -25,7 +25,7 @@ namespace benchmark {
 
 bool finished_running(const std::chrono::duration<std::uint32_t, std::milli>& curr_time,
                       std::uint32_t iter) {
-    return (curr_time > maxtime || (curr_time > mintime && iter > 100));
+    return (curr_time > maxtime || (curr_time > mintime && iter > MAX_ITER));
 }
 
 void microbench::run() {
@@ -42,15 +42,13 @@ void microbench::run() {
         after_task();
     }
     teardown();
-
-    std::cout << iteration << " iterations" << std::endl;
-    std::cout << _name << ": " << _score.get_score() << "MB/s" << std::endl;
 }
 
 std::vector<std::string> parse_json_file_to_strings(bsoncxx::stdx::string_view json_file) {
     std::vector<std::string> jsons;
     std::ifstream stream{json_file.to_string()};
-    while (!stream.eof()) {
+
+    while (stream.is_open() && !stream.eof()) {
         std::string s;
         std::getline(stream, s);
         jsons.push_back(s);
