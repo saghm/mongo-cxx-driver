@@ -23,10 +23,10 @@
 #include "multi_doc/gridfs_download.hpp"
 #include "multi_doc/gridfs_upload.hpp"
 
-#include "parallel/multi_export.hpp"
-#include "parallel/multi_gridfs_download.hpp"
-#include "parallel/multi_gridfs_upload.hpp"
-#include "parallel/multi_import.hpp"
+#include "parallel/gridfs_multi_export.hpp"
+#include "parallel/gridfs_multi_import.hpp"
+#include "parallel/json_multi_export.hpp"
+#include "parallel/json_multi_import.hpp"
 
 #include "single_doc/find_one_by_id.hpp"
 #include "single_doc/insert_one.hpp"
@@ -68,11 +68,10 @@ benchmark_runner::benchmark_runner() {
         stdx::make_unique<gridfs_download>("single_and_multi_document/gridfs_large.bin"));
 
     // Parallel microbenchmarks
-    _microbenches.push_back(stdx::make_unique<multi_import>("parallel_files/ldjson_multi"));
-    _microbenches.push_back(stdx::make_unique<multi_export>("parallel_files/ldjson_multi"));
-    _microbenches.push_back(stdx::make_unique<multi_gridfs_upload>("parallel_files/gridfs_multi"));
-    _microbenches.push_back(
-        stdx::make_unique<multi_gridfs_download>("parallel_files/gridfs_multi"));
+    _microbenches.push_back(stdx::make_unique<json_multi_import>("parallel/ldjson_multi"));
+    _microbenches.push_back(stdx::make_unique<json_multi_export>("parallel/ldjson_multi"));
+    _microbenches.push_back(stdx::make_unique<gridfs_multi_import>("parallel/gridfs_multi"));
+    _microbenches.push_back(stdx::make_unique<gridfs_multi_export>("parallel/gridfs_multi"));
 }
 
 void benchmark_runner::run_microbenches(benchmark_type tag) {

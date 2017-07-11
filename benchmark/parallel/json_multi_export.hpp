@@ -35,18 +35,18 @@ using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::concatenate;
 
-class multi_export : public microbench {
+class json_multi_export : public microbench {
    public:
     static const std::uint32_t TOTAL_FILES{100};
     static const std::uint32_t DOCS_PER_FILE{5000};
 
-    multi_export() = delete;
+    json_multi_export() = delete;
 
     // The task size comes from the Driver Perfomance Benchmarking Reference Doc.
-    multi_export(bsoncxx::stdx::string_view dir,
-                 std::uint32_t thread_num = std::thread::hardware_concurrency())
+    json_multi_export(bsoncxx::stdx::string_view dir,
+                      std::uint32_t thread_num = std::thread::hardware_concurrency())
         : microbench{565,
-                     "multi_export",
+                     "json_multi_export",
                      std::set<benchmark_type>{benchmark_type::parallel_bench,
                                               benchmark_type::read_bench}},
           _directory{dir.to_string()},
@@ -70,7 +70,7 @@ class multi_export : public microbench {
     std::uint32_t _thread_num;
 };
 
-void multi_export::setup() {
+void json_multi_export::setup() {
     auto conn = _pool.acquire();
     mongocxx::database db = (*conn)["perftest"];
     db.drop();
@@ -91,7 +91,7 @@ void multi_export::setup() {
     }
 }
 
-void multi_export::before_task() {
+void json_multi_export::before_task() {
     for (std::uint32_t i = 0; i < TOTAL_FILES; i++) {
         std::stringstream ss;
         ss << _directory << "/tmp/ldjson" << std::setfill('0') << std::setw(3) << i << ".txt";
@@ -99,12 +99,12 @@ void multi_export::before_task() {
     }
 }
 
-void multi_export::teardown() {
+void json_multi_export::teardown() {
     auto conn = _pool.acquire();
     (*conn)["perftest"].drop();
 }
 
-void multi_export::task() {
+void json_multi_export::task() {
     std::div_t result =
         std::div(static_cast<std::int32_t>(TOTAL_FILES), static_cast<std::int32_t>(_thread_num));
     std::uint32_t num_each = static_cast<std::uint32_t>(result.quot);
@@ -122,7 +122,7 @@ void multi_export::task() {
     }
 }
 
-void multi_export::concurrency_task(std::uint32_t start_file, std::uint32_t num_files) {
+void json_multi_export::concurrency_task(std::uint32_t start_file, std::uint32_t num_files) {
     for (std::uint32_t i = start_file; i < start_file + num_files; i++) {
         std::stringstream ss;
         ss << _directory << "/tmp/ldjson" << std::setfill('0') << std::setw(3) << i << ".txt";

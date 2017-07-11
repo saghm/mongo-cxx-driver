@@ -18,6 +18,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <thread>
 #include <vector>
 
 #include <mongocxx/gridfs/bucket.hpp>
@@ -30,17 +31,17 @@ namespace benchmark {
 using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
 
-class multi_gridfs_download : public microbench {
+class gridfs_multi_export : public microbench {
    public:
     static const std::uint32_t TOTAL_FILES{50};
 
-    multi_gridfs_download() = delete;
+    gridfs_multi_export() = delete;
 
     // The task size comes from the Driver Perfomance Benchmarking Reference Doc.
-    multi_gridfs_download(bsoncxx::stdx::string_view dir,
-                          std::uint32_t thread_num = std::thread::hardware_concurrency())
+    gridfs_multi_export(bsoncxx::stdx::string_view dir,
+                        std::uint32_t thread_num = std::thread::hardware_concurrency())
         : microbench{262.144,
-                     "multi_gridfs_download",
+                     "gridfs_multi_export",
                      std::set<benchmark_type>{benchmark_type::parallel_bench,
                                               benchmark_type::read_bench}},
           _directory{dir.to_string()},
@@ -65,7 +66,7 @@ class multi_gridfs_download : public microbench {
     std::uint32_t _thread_num;
 };
 
-void multi_gridfs_download::setup() {
+void gridfs_multi_export::setup() {
     auto conn = _pool.acquire();
     mongocxx::database db = (*conn)["perftest"];
     db.drop();
@@ -80,7 +81,7 @@ void multi_gridfs_download::setup() {
     }
 }
 
-void multi_gridfs_download::before_task() {
+void gridfs_multi_export::before_task() {
     for (std::uint32_t i = 0; i < TOTAL_FILES; i++) {
         std::stringstream ss;
         ss << _directory << "/tmp/file" << std::setfill('0') << std::setw(2) << i << ".txt";
@@ -88,12 +89,12 @@ void multi_gridfs_download::before_task() {
     }
 }
 
-void multi_gridfs_download::teardown() {
+void gridfs_multi_export::teardown() {
     auto conn = _pool.acquire();
     (*conn)["perftest"].drop();
 }
 
-void multi_gridfs_download::task() {
+void gridfs_multi_export::task() {
     std::div_t result =
         std::div(static_cast<std::int32_t>(TOTAL_FILES), static_cast<std::int32_t>(_thread_num));
     std::uint32_t num_each = static_cast<std::uint32_t>(result.quot);
@@ -111,7 +112,7 @@ void multi_gridfs_download::task() {
     }
 }
 
-void multi_gridfs_download::concurrency_task(std::uint32_t start_file, std::uint32_t num_files) {
+void gridfs_multi_export::concurrency_task(std::uint32_t start_file, std::uint32_t num_files) {
     for (std::uint32_t i = start_file; i < start_file + num_files; i++) {
         std::stringstream ss;
         ss << _directory << "/tmp/file" << std::setfill('0') << std::setw(2) << i << ".txt";

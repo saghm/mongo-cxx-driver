@@ -18,6 +18,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <thread>
 #include <vector>
 
 #include <mongocxx/gridfs/bucket.hpp>
@@ -30,17 +31,17 @@ namespace benchmark {
 using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
 
-class multi_gridfs_upload : public microbench {
+class gridfs_multi_import : public microbench {
    public:
     static const std::uint32_t TOTAL_FILES{50};
 
-    multi_gridfs_upload() = delete;
+    gridfs_multi_import() = delete;
 
     // The task size comes from the Driver Perfomance Benchmarking Reference Doc.
-    multi_gridfs_upload(bsoncxx::stdx::string_view dir,
+    gridfs_multi_import(bsoncxx::stdx::string_view dir,
                         std::uint32_t thread_num = std::thread::hardware_concurrency() * 2)
         : microbench{262.144,
-                     "multi_gridfs_upload",
+                     "gridfs_multi_import",
                      std::set<benchmark_type>{benchmark_type::parallel_bench,
                                               benchmark_type::write_bench}},
           _directory{dir.to_string()},
@@ -64,13 +65,13 @@ class multi_gridfs_upload : public microbench {
     std::uint32_t _thread_num;
 };
 
-void multi_gridfs_upload::setup() {
+void gridfs_multi_import::setup() {
     auto conn = _pool.acquire();
 
     (*conn)["perftest"].drop();
 }
 
-void multi_gridfs_upload::before_task() {
+void gridfs_multi_import::before_task() {
     auto conn = _pool.acquire();
     auto db = (*conn)["perftest"];
     auto bucket = db.gridfs_bucket();
@@ -82,12 +83,12 @@ void multi_gridfs_upload::before_task() {
     uploader.close();
 }
 
-void multi_gridfs_upload::teardown() {
+void gridfs_multi_import::teardown() {
     auto conn = _pool.acquire();
     (*conn)["perftest"].drop();
 }
 
-void multi_gridfs_upload::task() {
+void gridfs_multi_import::task() {
     std::div_t result =
         std::div(static_cast<std::int32_t>(TOTAL_FILES), static_cast<std::int32_t>(_thread_num));
     std::uint32_t num_each = static_cast<std::uint32_t>(result.quot);
@@ -105,7 +106,7 @@ void multi_gridfs_upload::task() {
     }
 }
 
-void multi_gridfs_upload::concurrency_task(std::uint32_t start_file, std::uint32_t num_files) {
+void gridfs_multi_import::concurrency_task(std::uint32_t start_file, std::uint32_t num_files) {
     for (std::uint32_t i = start_file; i < start_file + num_files; i++) {
         std::stringstream ss;
         ss << _directory << "/file" << std::setfill('0') << std::setw(2) << i << ".txt";

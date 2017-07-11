@@ -35,17 +35,17 @@ namespace benchmark {
 using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
 
-class multi_import : public microbench {
+class json_multi_import : public microbench {
    public:
     static const std::uint32_t TOTAL_FILES{100};
 
-    multi_import() = delete;
+    json_multi_import() = delete;
 
     // The task size comes from the Driver Perfomance Benchmarking Reference Doc.
-    multi_import(bsoncxx::stdx::string_view dir,
-                 std::uint32_t thread_num = std::thread::hardware_concurrency() * 2)
+    json_multi_import(bsoncxx::stdx::string_view dir,
+                      std::uint32_t thread_num = std::thread::hardware_concurrency() * 2)
         : microbench{565,
-                     "multi_import",
+                     "json_multi_import",
                      std::set<benchmark_type>{benchmark_type::parallel_bench,
                                               benchmark_type::write_bench}},
           _directory{dir.to_string()},
@@ -68,24 +68,24 @@ class multi_import : public microbench {
     mongocxx::pool _pool;
     std::uint32_t _thread_num;
 };
-void multi_import::setup() {
+void json_multi_import::setup() {
     auto conn = _pool.acquire();
     mongocxx::database db = (*conn)["perftest"];
     db.drop();
 }
 
-void multi_import::before_task() {
+void json_multi_import::before_task() {
     auto conn = _pool.acquire();
     (*conn)["perftest"]["corpus"].drop();
     (*conn)["perftest"].create_collection("corpus");
 }
 
-void multi_import::teardown() {
+void json_multi_import::teardown() {
     auto conn = _pool.acquire();
     (*conn)["perftest"].drop();
 }
 
-void multi_import::task() {
+void json_multi_import::task() {
     std::div_t result =
         std::div(static_cast<std::int32_t>(TOTAL_FILES), static_cast<std::int32_t>(_thread_num));
     std::uint32_t num_each = static_cast<std::uint32_t>(result.quot);
@@ -103,7 +103,7 @@ void multi_import::task() {
     }
 }
 
-void multi_import::concurrency_task(std::uint32_t start_file, std::uint32_t num_files) {
+void json_multi_import::concurrency_task(std::uint32_t start_file, std::uint32_t num_files) {
     auto client = _pool.acquire();
     mongocxx::options::insert ins_opts;
     ins_opts.ordered(false);
