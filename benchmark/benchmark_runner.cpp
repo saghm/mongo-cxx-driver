@@ -165,7 +165,8 @@ void benchmark_runner::print_scores() {
     }
 
     std::cout << std::endl << "Composite benchmarks:" << std::endl << "===========" << std::endl;
-    for (auto&& type : _types) {
+
+    auto print_comp = [this, &read, &write](benchmark_type type) {
         double avg = calculate_average(type);
 
         if (read < 0 && type == benchmark_type::read_bench) {
@@ -175,6 +176,16 @@ void benchmark_runner::print_scores() {
         }
 
         std::cout << type_names[type] << " " << avg << " MB/s" << std::endl;
+    };
+
+    if (!_types.empty()) {
+        for (auto&& type : _types) {
+            print_comp(type);
+        }
+    } else {
+        for (auto&& pair : names_types) {
+            print_comp(pair.second);
+        }
     }
 
     if (read > 0 && write > 0) {
