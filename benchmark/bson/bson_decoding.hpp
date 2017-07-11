@@ -24,13 +24,19 @@ class bson_decoding : public microbench {
 
     bson_decoding(std::string name, double task_size, bsoncxx::stdx::string_view json_file)
         : microbench{name, task_size, std::set<benchmark_type>{benchmark_type::bson_bench}},
-          _json{parse_json_file_to_strings(json_file)[0]} {}
+          _file_name{json_file.to_string()} {}
 
    protected:
     void task();
+    void setup();
 
    private:
+    std::string _file_name;
     std::string _json;
+};
+
+void bson_decoding::setup() {
+    _json = parse_json_file_to_strings(_file_name)[0];
 }
 
 void bson_decoding::task() {

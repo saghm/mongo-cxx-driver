@@ -42,7 +42,7 @@ class insert_one : public microbench {
                                               benchmark_type::write_bench}},
           _conn{mongocxx::uri{}},
           _iter{iter},
-          _doc{parse_json_file_to_documents(json_file)[0]} {}
+          _file_name{json_file.to_string()} {}
 
    protected:
     void setup();
@@ -58,9 +58,11 @@ class insert_one : public microbench {
     std::int32_t _iter;
     bsoncxx::stdx::optional<bsoncxx::document::value> _doc;
     mongocxx::collection _coll;
+    std::string _file_name;
 };
 
 void insert_one::setup() {
+    _doc = parse_json_file_to_documents(_file_name)[0];
     mongocxx::database db = _conn["perftest"];
     db.drop();
 }
