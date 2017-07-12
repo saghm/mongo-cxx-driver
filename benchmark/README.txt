@@ -1,3 +1,5 @@
+This suite implements the benchmarks described in this spec: https://docs.google.com/document/d/1x7dCHHx_owOFYIPZ6VQwPerSWRhdkMSiepyFrNSFlLw/edit#
+
 In order to run the microbenchmarks, download the necessary test files from:
 https://github.com/mongodb-labs/driver-performance-test-data
 
@@ -25,3 +27,5 @@ Note that in order to compare against the other drivers, an inMemory mongod inst
 used.
 At this point, bson_decoding has not been added to the benchmarking suite due to the fact that 
 extended_bson has not been added to the C++ driver (CXX-1241).
+
+Also note that the BSONBench tests are implemented to mirror the C driver's interpretation of the spec.

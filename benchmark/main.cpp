@@ -32,6 +32,11 @@ int main(int argc, char* argv[]) {
                 std::cout << "Invalid benchmark: " << type << std::endl;
             }
         }
+
+        if (types.empty()) {
+            std::cout << "No valid benchmarks specified. Exiting." << std::endl;
+            return 1;
+        }
     }
 
     benchmark_runner runner{types};
