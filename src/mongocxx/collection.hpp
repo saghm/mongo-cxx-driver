@@ -55,6 +55,7 @@ namespace mongocxx {
 MONGOCXX_INLINE_NAMESPACE_BEGIN
 
 class client;
+class session;
 class database;
 class pipeline;
 
@@ -699,6 +700,15 @@ class MONGOCXX_API collection {
     ///
     /// Gets an index_view to the collection.
     class index_view indexes();
+
+    ///
+    /// Gets a pointer to the session that this collection is associated with, if any.
+    ///
+    /// @return
+    ///   Pointer to the session that this collection is associated with. If the collection is not
+    ///   associated with any session, returns a null pointer.
+    ///
+    const class session* session() const;
 
    private:
     friend class database;
