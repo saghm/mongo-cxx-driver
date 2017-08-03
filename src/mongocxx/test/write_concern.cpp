@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <iostream>
+
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/builder/basic/kvp.hpp>
 #include <bsoncxx/test_util/catch.hh>
+#include <mongocxx/client.hpp>
 #include <mongocxx/exception/exception.hpp>
 #include <mongocxx/exception/logic_error.hpp>
 #include <mongocxx/instance.hpp>
+#include <mongocxx/uri.hpp>
 #include <mongocxx/write_concern.hpp>
 
 namespace {
@@ -409,6 +413,32 @@ TEST_CASE("write_concern changes reflected in to_document") {
     wc.journal(true);
     auto generated_nodes = wc.to_document();
     REQUIRE(generated_nodes.view() == nodes.view());
+}
+
+// TODO: remove this case, only here for demonstration purposes.
+TEST_CASE("change") {
+    instance::current();
+
+    uri uri{"mongodb://localhost,localhost:27014,localhost:27015/?replicaSet=rs0"};
+    client client{uri};
+    database db = client["change"];
+    collection coll = db["cc"];
+
+    read_preference rp;
+    rp.mode(read_preference::read_mode::k_primary_preferred);
+    coll.read_preference(rp);
+
+    options::change_stream cs_opts;
+    cs_opts.max_await_time(std::chrono::milliseconds{5000});
+    cs_opts.full_document("lookup");
+
+    change_stream cs = coll.watch(cs_opts);
+
+    while (true) {
+        for (auto&& doc : cs) {
+            std::cout << bsoncxx::to_json(doc) << std::endl;
+        }
+    }
 }
 
 }  // namespace

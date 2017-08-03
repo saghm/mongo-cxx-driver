@@ -28,6 +28,8 @@ namespace options {
 
 class MONGOCXX_API change_stream {
    public:
+    change_stream() = default;
+
     ///
     /// Sets the fullDocument stage for the $changeStream.
     ///
